@@ -6,10 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <meta name="theme-color" content="#a78bfa">
     <title>School Planner</title>
 
-    <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -85,6 +83,39 @@
         </div>
         <div class="label" id="schedule-day-label">MONDAY</div>
         <div id="schedule-list"></div>
+      </div>
+
+      <div id="view-contacts" class="screen">
+        <h2 class="headline" style="margin-bottom: 24px">Contacts</h2>
+        <div
+          class="input-box"
+          style="
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+          "
+        >
+          <span
+            class="material-symbols-rounded"
+            style="opacity: 0.5; margin-right: 12px"
+            >search</span
+          >
+          <input
+            type="text"
+            onkeyup="renderContacts(this.value)"
+            placeholder="Search contacts..."
+            style="
+              background: transparent;
+              border: none;
+              color: white;
+              width: 100%;
+              outline: none;
+              font-size: 16px;
+            "
+          />
+        </div>
+        <div id="contacts-list"></div>
       </div>
 
       <div id="view-focus" class="screen">
@@ -265,6 +296,11 @@
           >calendar_month</span
         >
       </div>
+      <div class="nav-item" onclick="nav('contacts', this)">
+        <span class="material-symbols-rounded" style="font-size: 28px"
+          >group</span
+        >
+      </div>
       <div class="nav-item" onclick="nav('focus', this)">
         <span class="material-symbols-rounded" style="font-size: 28px"
           >timer</span
@@ -293,6 +329,9 @@
           </div>
           <div class="seg-item" id="cat-grade" onclick="setCat('grade')">
             Grade
+          </div>
+          <div class="seg-item" id="cat-contact" onclick="setCat('contact')">
+            Contact
           </div>
         </div>
         <input type="hidden" id="add-category" value="task" />
@@ -370,6 +409,24 @@
             <option value="0.5">Honors (+0.5)</option>
             <option value="1.0">AP / IB (+1.0)</option>
           </select>
+        </div>
+
+        <div id="form-contact" style="display: none">
+          <div class="label">Phone Number</div>
+          <input
+            type="tel"
+            class="input-box"
+            id="inp-phone"
+            placeholder="+1 234..."
+          />
+
+          <div class="label">Email Address</div>
+          <input
+            type="email"
+            class="input-box"
+            id="inp-email"
+            placeholder="name@example.com"
+          />
         </div>
 
         <button
