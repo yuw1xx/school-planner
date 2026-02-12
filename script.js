@@ -2,6 +2,7 @@
 let tasks = JSON.parse(localStorage.getItem("u_tasks")) || [];
 let classes = JSON.parse(localStorage.getItem("u_classes")) || [];
 let grades = JSON.parse(localStorage.getItem("u_grades_v2")) || [];
+let contacts = JSON.parse(localStorage.getItem("u_contacts")) || [];
 let apps = JSON.parse(localStorage.getItem("u_apps")) || [];
 
 let currentTheme = localStorage.getItem("u_theme") || "violet";
@@ -29,6 +30,7 @@ function initViews() {
   const dayToRender = d === 0 || d === 6 ? 1 : d;
   renderSchedule(dayToRender);
   renderGrades();
+  renderContacts();
 }
 
 // --- 2. NAVIGATION ---
@@ -476,12 +478,67 @@ function renderDash() {
             </div>`;
 }
 
-// --- 8. ACTIONS & CRUD ---
+// --- 8. CONTACTS LOGIC ---
+window.renderContacts = (query = "") => {
+  const list = document.getElementById("contacts-list");
+  list.innerHTML = "";
+
+  let filtered = contacts;
+  if (query) {
+    filtered = contacts.filter((c) =>
+      c.title.toLowerCase().includes(query.toLowerCase()),
+    );
+  }
+
+  if (!filtered.length) {
+    list.innerHTML = `<div style="text-align:center; opacity:0.5; margin-top:40px;">No contacts found.</div>`;
+    return;
+  }
+
+  filtered.sort((a, b) => a.title.localeCompare(b.title));
+
+  filtered.forEach((c) => {
+    let actions = "";
+    if (c.phone)
+      actions += `<a href="tel:${c.phone}" class="icon-box" style="width:36px; height:36px; background:rgba(255,255,255,0.1);"><span class="material-symbols-rounded" style="font-size:18px">call</span></a>`;
+    if (c.email)
+      actions += `<a href="mailto:${c.email}" class="icon-box" style="width:36px; height:36px; background:rgba(255,255,255,0.1);"><span class="material-symbols-rounded" style="font-size:18px">mail</span></a>`;
+
+    list.innerHTML += `
+        <div class="card">
+            <div class="card-row">
+                <div class="icon-box" style="background:var(--primary); color:black;">
+                    <span class="material-symbols-rounded">person</span>
+                </div>
+                <div style="flex:1; overflow:hidden;">
+                    <div class="card-title" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.title}</div>
+                    <div class="body-text" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.phone || ""} ${c.phone && c.email ? "•" : ""} ${c.email || ""}</div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    ${actions}
+                    <button onclick="delContact(${c.id})" style="background:none; border:none; opacity:0.5; color:var(--text-muted); cursor:pointer;">
+                         <span class="material-symbols-rounded">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+  });
+};
+
+window.delContact = (id) => {
+  if (!confirm("Delete contact?")) return;
+  contacts = contacts.filter((c) => c.id !== id);
+  save();
+  renderContacts(document.querySelector("#view-contacts input")?.value || "");
+};
+
+// --- 9. ACTIONS & CRUD ---
 window.saveItem = () => {
   const cat = document.getElementById("add-category").value;
   const title = document.getElementById("inp-title").value.trim();
   const id = Date.now();
-  if (!title) return alert("Title required");
+  if (!title) return alert("Title / Name required");
 
   if (cat === "task") {
     tasks.push({
@@ -504,7 +561,6 @@ window.saveItem = () => {
       day: document.getElementById("inp-day").value,
       time: document.getElementById("inp-time").value,
     });
-    // Fix: Using correct sort logic for classes
     classes.sort((a, b) => a.day - b.day || a.time.localeCompare(b.time));
   } else if (cat === "grade") {
     grades.push({
@@ -514,28 +570,33 @@ window.saveItem = () => {
       credits: document.getElementById("inp-credits").value || 3,
       weight: document.getElementById("inp-weight").value || 0,
     });
+  } else if (cat === "contact") {
+    contacts.push({
+      id,
+      title,
+      phone: document.getElementById("inp-phone").value,
+      email: document.getElementById("inp-email").value,
+    });
   }
+
+  window.delClass = (id) => {
+    classes = classes.filter((x) => x.id !== id);
+    save();
+    const chips = Array.from(document.querySelectorAll("#view-schedule .chip"));
+    const activeIndex = chips.findIndex((c) => c.classList.contains("active"));
+    const dayToRender = activeIndex === -1 ? 1 : activeIndex + 1;
+
+    renderSchedule(dayToRender);
+  };
 
   save();
   closeModal();
-  initViews(); // This re-renders everything, so we don't need manual render calls here
+  initViews();
 
-  // Clear inputs
   document.getElementById("inp-title").value = "";
   document.getElementById("inp-date").value = "";
-};
-
-// --- MOVED OUTSIDE ---
-window.delClass = (id) => {
-  classes = classes.filter((x) => x.id !== id);
-  save();
-  
-  // Smart re-render: find which day tab is active
-  const chips = Array.from(document.querySelectorAll("#view-schedule .chip"));
-  const activeIndex = chips.findIndex((c) => c.classList.contains("active"));
-  const dayToRender = activeIndex === -1 ? 1 : activeIndex + 1;
-
-  renderSchedule(dayToRender);
+  document.getElementById("inp-phone").value = "";
+  document.getElementById("inp-email").value = "";
 };
 
 window.delGrade = (id) => {
@@ -543,19 +604,20 @@ window.delGrade = (id) => {
   save();
   renderGrades();
 };
-
 function save() {
   localStorage.setItem("u_tasks", JSON.stringify(tasks));
   localStorage.setItem("u_classes", JSON.stringify(classes));
   localStorage.setItem("u_grades_v2", JSON.stringify(grades));
+  localStorage.setItem("u_contacts", JSON.stringify(contacts));
 }
 
-// 9. BACKUP & RESTORE FUNCTIONS
+// 10. BACKUP & RESTORE FUNCTIONS
 window.exportData = () => {
   const data = {
     tasks: JSON.parse(localStorage.getItem("u_tasks")),
     classes: JSON.parse(localStorage.getItem("u_classes")),
     grades: JSON.parse(localStorage.getItem("u_grades_v2")),
+    contacts: JSON.parse(localStorage.getItem("u_contacts")),
     apps: JSON.parse(localStorage.getItem("u_apps")),
     theme: localStorage.getItem("u_theme"),
   };
@@ -576,9 +638,14 @@ window.importData = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const data = JSON.parse(event.target.result);
-      localStorage.setItem("u_tasks", JSON.stringify(data.tasks));
-      localStorage.setItem("u_classes", JSON.stringify(data.classes));
-      localStorage.setItem("u_grades_v2", JSON.stringify(data.grades));
+      if (data.tasks)
+        localStorage.setItem("u_tasks", JSON.stringify(data.tasks));
+      if (data.classes)
+        localStorage.setItem("u_classes", JSON.stringify(data.classes));
+      if (data.grades)
+        localStorage.setItem("u_grades_v2", JSON.stringify(data.grades));
+      if (data.contacts)
+        localStorage.setItem("u_contacts", JSON.stringify(data.contacts));
       if (data.apps) localStorage.setItem("u_apps", JSON.stringify(data.apps));
       if (data.theme) localStorage.setItem("u_theme", data.theme);
       location.reload();
@@ -607,12 +674,19 @@ window.setCat = (c) => {
     .forEach((el) => el.classList.remove("active"));
   document.getElementById(`cat-${c}`).classList.add("active");
   document.getElementById("add-category").value = c;
-  document.getElementById("form-task").style.display =
-    c === "task" ? "block" : "none";
-  document.getElementById("form-class").style.display =
-    c === "class" ? "block" : "none";
-  document.getElementById("form-grade").style.display =
-    c === "grade" ? "block" : "none";
+
+  document.getElementById("form-task").style.display = "none";
+  document.getElementById("form-class").style.display = "none";
+  document.getElementById("form-grade").style.display = "none";
+  document.getElementById("form-contact").style.display = "none";
+
+  // Existing Generic Title Input Handling
+  const titleInput = document.getElementById("inp-title");
+  if (c === "contact") titleInput.placeholder = "Name (e.g. John Doe)";
+  else if (c === "class") titleInput.placeholder = "Class Name";
+  else titleInput.placeholder = "Title";
+
+  document.getElementById(`form-${c}`).style.display = "block";
 };
 
 function updateDate() {
@@ -625,16 +699,3 @@ function updateDate() {
     { weekday: "long", month: "long", day: "numeric" },
   );
 }
-
-// --- PWA INSTALLATION ---
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker Registered'));
-}
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    console.log("Ready to install!"); 
-})
-  ;
