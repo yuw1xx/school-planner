@@ -504,6 +504,7 @@ window.saveItem = () => {
       day: document.getElementById("inp-day").value,
       time: document.getElementById("inp-time").value,
     });
+    // Fix: Using correct sort logic for classes
     classes.sort((a, b) => a.day - b.day || a.time.localeCompare(b.time));
   } else if (cat === "grade") {
     grades.push({
@@ -515,22 +516,26 @@ window.saveItem = () => {
     });
   }
 
-  window.delClass = (id) => {
-    classes = classes.filter((x) => x.id !== id);
-    save();
-    const chips = Array.from(document.querySelectorAll("#view-schedule .chip"));
-    const activeIndex = chips.findIndex((c) => c.classList.contains("active"));
-    const dayToRender = activeIndex === -1 ? 1 : activeIndex + 1;
-
-    renderSchedule(dayToRender);
-  };
-
   save();
   closeModal();
-  initViews();
+  initViews(); // This re-renders everything, so we don't need manual render calls here
 
+  // Clear inputs
   document.getElementById("inp-title").value = "";
   document.getElementById("inp-date").value = "";
+};
+
+// --- MOVED OUTSIDE ---
+window.delClass = (id) => {
+  classes = classes.filter((x) => x.id !== id);
+  save();
+  
+  // Smart re-render: find which day tab is active
+  const chips = Array.from(document.querySelectorAll("#view-schedule .chip"));
+  const activeIndex = chips.findIndex((c) => c.classList.contains("active"));
+  const dayToRender = activeIndex === -1 ? 1 : activeIndex + 1;
+
+  renderSchedule(dayToRender);
 };
 
 window.delGrade = (id) => {
@@ -538,6 +543,7 @@ window.delGrade = (id) => {
   save();
   renderGrades();
 };
+
 function save() {
   localStorage.setItem("u_tasks", JSON.stringify(tasks));
   localStorage.setItem("u_classes", JSON.stringify(classes));
