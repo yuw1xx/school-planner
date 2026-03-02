@@ -10,25 +10,25 @@ Built with pure **HTML, CSS, and JavaScript**, it requires no backend and saves 
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🏠 **Smart Dashboard**
+### **Smart Dashboard**
 * **Dynamic Greeting:** Changes based on the time of day.
 * **Happening Now:** Instantly shows your current class or free time.
 * **Up Next:** Displays your next immediate deadline.
 * **App Dock:** Customizable shortcuts to your most-used links (Canvas, Gmail, etc.) with custom icons.
 
-### ✅ **Task Management**
+### **Task Management**
 * **Categories:** Sort tasks by Homework, Exams, Projects, or Personal items.
 * **Deadlines:** Tasks are automatically sorted by due date.
 * **Swipe/Click to Delete:** Easy management of completed items.
 
-### 🍅 **Focus Timer (Pomodoro)**
+### **Focus Timer (Pomodoro)**
 * **Customizable Intervals:** Preset focus modes (25m, 45m, 60m) and break times (5m, 15m).
 * **Visual Ring:** SVG-based countdown animation.
 * **Distraction Free:** Locks scrolling while the timer is active to prevent doom-scrolling.
 
-### 📊 **Advanced Grade Calculator**
+### **Advanced Grade Calculator**
 * **Multi-System Support:** Works with:
     * Percentage (%)
     * GPA (4.0 Scale)
@@ -37,14 +37,14 @@ Built with pure **HTML, CSS, and JavaScript**, it requires no backend and saves 
     * UK Classification (1st, 2:1, etc.)
 * **Target Calculator:** Calculates exactly what you need on your final exam to achieve your goal grade.
 
-### 🎨 **Customization & Data**
+### **Customization & Data**
 * **Themes:** Switch between Violet, Emerald, Berry, and Ocean themes.
 * **Privacy:** All data is stored in `localStorage`. Nothing leaves your device.
 * **Backup:** Built-in JSON Export/Import to transfer data between devices.
 
 ---
 
-## 🛠️ Installation & Usage
+## Installation & Usage
 
 Since this project uses vanilla web technologies, you don't need to install Node.js or run a server.
 
@@ -61,7 +61,7 @@ For the best experience on mobile, use Safari (iOS) or Chrome (Android) and sele
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 * **HTML5:** Semantic structure.
 * **CSS3:** CSS Variables, Flexbox, Grid, and complex animations.
@@ -70,7 +70,7 @@ For the best experience on mobile, use Safari (iOS) or Chrome (Android) and sele
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! If you have ideas for new widgets or themes:
 
@@ -80,6 +80,6 @@ Contributions are welcome! If you have ideas for new widgets or themes:
 4.  Push to the Branch (`git push origin feature/NewWidget`).
 5.  Open a Pull Request.
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
